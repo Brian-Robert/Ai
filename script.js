@@ -2,7 +2,7 @@ const chat = document.getElementById("chat");
 const input = document.getElementById("prompt");
 const button = document.getElementById("send");
 
-const WORKER_URL = "brian-ai.brian-robert.worker.dev";
+const WORKER_URL = "brian-ai.brian-robert.workers.dev";
 
 button.onclick = sendMessage;
 

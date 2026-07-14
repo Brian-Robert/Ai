@@ -2,6 +2,8 @@ const chat = document.getElementById("chat");
 const input = document.getElementById("prompt");
 const button = document.getElementById("send");
 
+const WORKER_URL = "brian-ai.brian-robert.worker.dev";
+
 button.onclick = sendMessage;
 
 input.addEventListener("keypress", function(event) {
@@ -18,16 +20,36 @@ function addMessage(text, type) {
     chat.scrollTop = chat.scrollHeight;
 }
 
-function sendMessage() {
+async function sendMessage() {
     const text = input.value.trim();
 
     if (!text) return;
 
     addMessage(text, "user");
-
     input.value = "";
 
-    setTimeout(() => {
-        addMessage("AI is not connected yet.", "ai");
-    }, 500);
+    try {
+        const response = await fetch(WORKER_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: text
+            })
+        });
+
+        const data = await response.json();
+
+        const reply =
+            data.choices?.[0]?.message?.content ||
+            data.choices?.[0]?.text ||
+            "No response.";
+
+        addMessage(reply, "ai");
+
+    } catch (error) {
+        addMessage("Connection error.", "ai");
+        console.error(error);
+    }
 }
